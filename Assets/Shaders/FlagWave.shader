@@ -19,33 +19,21 @@ Shader "Ethan/FlagWave"
             #pragma vertex vert
             #pragma fragment frag
 
-            // Include URP core functionality
+            // URP functionality
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Core.hlsl"
             #include "Packages/com.unity.render-pipelines.universal/ShaderLibrary/Lighting.hlsl"
 
             struct Attributes
             {
                 float4 positionOS : POSITION; // Object space position
-
                 float3 normalOS : NORMAL; // Object space normal
-
                 float2 uv : TEXCOORD0; // UV coordinates for texturing
-                
-                float4 tangentOS : TANGENT; // Tangent for normal mapping
             };
 
             struct Varyings
             {
                 float4 positionHCS : SV_POSITION; // Homogeneous clip-space position
-
-                float3 normalWS : TEXCOORD1; // World space normal
-
-                float3 tangentWS : TEXCOORD2; // World space tangent
-
                 float2 uv : TEXCOORD0; // UV coordinates
-
-                float3 bitangentWS : TEXCOORD3; // World space bitangent
-
                 float3 viewDirWS : TEXCOORD4; // World space view direction
             };
 
@@ -59,7 +47,6 @@ Shader "Ethan/FlagWave"
             float _Speed;
             float _Amp;
 
-            // Vertex Shader with wave animation
             Varyings vert(Attributes IN)
             {
                 Varyings OUT;
@@ -70,10 +57,10 @@ Shader "Ethan/FlagWave"
                 float3 displacedPos = IN.positionOS.xyz;
                 displacedPos.y += wave;
 
-                // Transform object space position to homogeneous clip-space position
+                // Transform object space position to homogeneous clip-space pos
                 OUT.positionHCS = TransformObjectToHClip(displacedPos);
 
-                // Calculate view direction in world space
+                // Calculate view dir in world space
                 float3 worldPosWS = TransformObjectToWorld(IN.positionOS.xyz);
                 OUT.viewDirWS = normalize(GetCameraPositionWS() - worldPosWS);
 
@@ -83,9 +70,9 @@ Shader "Ethan/FlagWave"
                 return OUT;
             }
 
-            // Fragment Shader to apply texture and base color tint
             half4 frag(Varyings IN) : SV_Target
             {
+                // Apply texture and base color tint
                 float2 uv = TRANSFORM_TEX(IN.uv, _MainTex);
                 half4 flag = SAMPLE_TEXTURE2D(_MainTex, sampler_MainTex, uv) * _BaseColor;
 
